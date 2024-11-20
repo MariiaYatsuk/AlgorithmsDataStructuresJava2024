@@ -52,6 +52,7 @@ public class WordGuessGame implements Game {
         while (checkWinner()) {
             printBoard();
             System.out.println("Enter a letter (A-Z):");
+
             String input = SCANNER.nextLine().toUpperCase();
 
             if (!Pattern.matches("[A-Z]", input)) {
