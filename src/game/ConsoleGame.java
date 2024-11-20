@@ -1,24 +1,30 @@
-import java.util.regex.Pattern;
-import java.util.ArrayList;
+package game;
+
+import boards.Board;
+import player.Player;
+
 import java.util.Random;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
-public class WordGuessGame implements Game {
+public class ConsoleGame implements Game{
     private static final String[] WORDS = {"EVEREST", "CINEMA", "APEX", "CLIMAX", "WISDOM", "PREMIERE", "HEREDITARY", "PRIMARY", "SEQUEL", "CUBE"};
     private static final Random RANDOM = new Random();
     private static final Scanner SCANNER = new Scanner(System.in);
-
+    private final Board someBoard;
+    private final Player player;
     private String theWord;
-    private ArrayList<String> board;
-    private int life;
     private String notUsed;
 
-    public WordGuessGame() {
-        this.board = new ArrayList<>();
+
+    public ConsoleGame(Board someBoard,Player player){
+    this.someBoard = someBoard;
+    this.player = player;
     }
 
     @Override
     public void start() {
+        initializeGame();
         while (true) {
             System.out.println("Welcome to the game Word Guess!");
             System.out.println("Press n for new game");
@@ -39,18 +45,15 @@ public class WordGuessGame implements Game {
 
     private void initializeGame() {
         theWord = WORDS[RANDOM.nextInt(WORDS.length)];
-        board.clear();
-        for (int i = 0; i < theWord.length(); i++) {
-            board.add("-");
-        }
-        life = 8;
+        someBoard.initializeBoard(theWord);
         notUsed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     }
 
     @Override
     public void play() {
-        while (checkWinner()) {
-            printBoard();
+        while (someBoard.checkWinner(theWord,player)) {
+            someBoard.printBoard(player);
+            System.out.println("Not used letters: " + notUsed);
             System.out.println("Enter a letter (A-Z):");
 
             String input = SCANNER.nextLine().toUpperCase();
@@ -68,50 +71,11 @@ public class WordGuessGame implements Game {
             }
 
             notUsed = notUsed.replace(String.valueOf(letter), ".");
-            boolean found = false;
-            for (int i = 0; i < theWord.length(); i++) {
-                if (theWord.charAt(i) == letter) {
-                    board.set(i, String.valueOf(letter));
-                    found = true;
-                }
-            }
+            boolean found = someBoard.updateBoard(theWord, letter);
 
             if (!found) {
-                life--;
+                player.decreaseLife();
             }
         }
-    }
-
-    @Override
-    public void printBoard() {
-        for (String ch : board) {
-            System.out.print(ch);
-        }
-        System.out.println(" " + life + " lives left");
-        System.out.println("Not used letters: " + notUsed);
-    }
-
-    @Override
-    public boolean checkWinner() {
-        StringBuilder currentWord = new StringBuilder();
-        for (String ch : board) {
-            currentWord.append(ch);
-        }
-
-        if (currentWord.toString().equals(theWord)) {
-            System.out.println("You won!");
-            System.out.println("The word was: " + theWord);
-            return false;
-        } else if (life == 0) {
-            System.out.println("No lives left. Game Over!");
-            System.out.println("The word was: " + theWord);
-            return false;
-        }
-        return true;
-    }
-
-    public static void main(String[] args) {
-        WordGuessGame game = new WordGuessGame();
-        game.start();
     }
 }
