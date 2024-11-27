@@ -1,7 +1,7 @@
 package player;
 
-public class RegularPlayer implements Player {
-    private int lifes = 8;
+public class ChildPlayer implements Player {
+    private int lifes = 20;
 
     @Override
     public int getLifes() {

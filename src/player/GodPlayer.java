@@ -1,7 +1,7 @@
 package player;
 
-public class RegularPlayer implements Player {
-    private int lifes = 8;
+public class GodPlayer implements Player {
+    private int lifes = 1;
 
     @Override
     public int getLifes() {
