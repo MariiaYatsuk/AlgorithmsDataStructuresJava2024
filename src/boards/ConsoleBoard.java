@@ -34,7 +34,7 @@ public class ConsoleBoard implements Board{
             System.out.println("The word was: " + theWord);
             return false;
         } else if (player.getLifes() == 0) {
-            System.out.println("No lives left. game.Game Over!");
+            System.out.println("No lives left. Game Over!");
             System.out.println("The word was: " + theWord);
             return false;
         }

@@ -12,6 +12,4 @@ public class RegularPlayer implements Player {
     public void decreaseLife() {
         if (lifes > 0) lifes--;
     }
-
-
 }

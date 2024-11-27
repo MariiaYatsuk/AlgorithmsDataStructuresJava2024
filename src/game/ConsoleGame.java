@@ -1,25 +1,27 @@
 package game;
 
 import boards.Board;
+import player.AIPlayer;
 import player.Player;
+import words.DefaultWords;
+import words.Words;
 
-import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class ConsoleGame implements Game{
-    private static final String[] WORDS = {"EVEREST", "CINEMA", "APEX", "CLIMAX", "WISDOM", "PREMIERE", "HEREDITARY", "PRIMARY", "SEQUEL", "CUBE"};
-    private static final Random RANDOM = new Random();
     private static final Scanner SCANNER = new Scanner(System.in);
     private final Board someBoard;
+    private final Words words;
     private final Player player;
     private String theWord;
     private String notUsed;
 
 
-    public ConsoleGame(Board someBoard,Player player){
+    public ConsoleGame(Board someBoard, Player player, Words words){
     this.someBoard = someBoard;
     this.player = player;
+    this.words = words;
     }
 
     @Override
@@ -29,6 +31,8 @@ public class ConsoleGame implements Game{
             System.out.println("Welcome to the game Word Guess!");
             System.out.println("Press n for new game");
             System.out.println("Press q to quit");
+            System.out.println("Press / to return to the menu");
+
             String menu = SCANNER.nextLine();
 
             if (menu.equals("q")) {
@@ -44,26 +48,36 @@ public class ConsoleGame implements Game{
     }
 
     private void initializeGame() {
-        theWord = WORDS[RANDOM.nextInt(WORDS.length)];
+        theWord =  words.provideWord();
         someBoard.initializeBoard(theWord);
         notUsed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     }
 
     @Override
     public void play() {
-        while (someBoard.checkWinner(theWord,player)) {
+        while (someBoard.checkWinner(theWord, player)) {
             someBoard.printBoard(player);
             System.out.println("Not used letters: " + notUsed);
-            System.out.println("Enter a letter (A-Z):");
+            System.out.println("Enter a letter ");
 
-            String input = SCANNER.nextLine().toUpperCase();
+            char letter;
+            if (player instanceof AIPlayer) {
+                letter = ((AIPlayer) player).guessLetter(notUsed);
+                System.out.println("AI player guessed: " + letter);
+            } else {
+                String input = new Scanner(System.in).nextLine().toUpperCase();
 
-            if (!Pattern.matches("[A-Z]", input)) {
-                System.out.println("This is not a single letter");
-                continue;
+                if (input.equals("/")) { // Перехід у меню
+                    System.out.println("Returning to menu...");
+                    return;
+                }
+
+                if (!Pattern.matches("[A-Z]", input)) {
+                    System.out.println("This is not a single letter");
+                    continue;
+                }
+                letter = input.charAt(0);
             }
-
-            char letter = input.charAt(0);
 
             if (!notUsed.contains(String.valueOf(letter))) {
                 System.out.println("Letter already used");
